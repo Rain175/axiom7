@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXIOM-7 TERMINAL</title>
+    <style>
+        * { box-sizing: border-box; }
+        body, html { 
+            height: 100%; margin: 0; padding: 0; 
+            background-color: #030803; 
+            color: #76ff03; 
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+
+        /* ── TERMINAL ── */
+        #terminal-container {
+            height: 100vh; width: 100vw;
+            display: flex; flex-direction: column;
+            padding: 20px;
+            border: 8px solid #0a150a;
+            transition: all 0.5s ease;
+        }
+
+        /* CIPHER-7 MODE */
+        #terminal-container.cipher-mode {
+            border-color: #ff0033;
+            background-color: #0a0301;
+        }
+
+        /* ── CIPHER INITIALIZATION OVERLAY ── */
+        #cipher-init-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 8, 3, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 30px;
+        }
+
+        #cipher-init-overlay.active {
+            display: flex;
+            animation: overlayFadeIn 0.3s ease;
+        }
+
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .cipher-init-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cipher-scanline {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #ff0033;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 0, 51, 0.5), inset 0 0 20px rgba(255, 0, 51, 0.1);
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 51, 0.1) 50%, transparent 100%);
+        }
+
+        .cipher-scanline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 0, 51, 0.3) 50%, transparent 100%);
+            animation: scanlines 2s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .cipher-text {
+            text-align: center;
+            color: #ff0033;
+            font-size: 1.2em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
+            animation: textGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { 
+                text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
+            }
+            50% { 
+                text-shadow: 0 0 20px #ff0033, 0 0 40px rgba(255, 0, 51, 0.8);
+            }
+        }
+
+        .cipher-subtext {
+            color: #ff3366;
+            font-size: 0.9em;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            animation: fadeInOut 1s ease-in-out infinite 0.3s;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .cipher-progress {
+            width: 250px;
+            height: 3px;
+            background: rgba(255, 0, 51, 0.2);
+            border: 1px solid #ff0033;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cipher-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0033, #ff3366);
+            box-shadow: 0 0 10px #ff0033;
+            animation: progress 2s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .cipher-code {
+            font-family: 'Courier New', monospace;
+            color: #ff0033;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 400px;
+            opacity: 0;
+            animation: codeReveal 0.5s ease-in-out forwards;
+        }
+
+        .cipher-code:nth-child(1) { animation-delay: 0.3s; }
+        .cipher-code:nth-child(2) { animation-delay: 0.6s; }
+        .cipher-code:nth-child(3) { animation-delay: 0.9s; }
+        .cipher-code:nth-child(4) { animation-delay: 1.2s; }
+
+        @keyframes codeReveal {
+            from { 
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to { 
+                opacity: 0.8;
+                transform: translateY(0);
+            }
+        }
+
+        /* Main terminal styles */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #1a331a;
+            letter-spacing: 2px; font-weight: bold;
+            font-size: 0.9em; text-transform: uppercase;
+            transition: all 0.5s ease;
+        }
+
+        #terminal-container.cipher-mode .header {
+            border-bottom-color: #ff0033;
+        }
+
+        .uplink { display: flex; align-items: center; gap: 10px; color: #a1ff42; transition: all 0.5s ease; }
+
+        #terminal-container.cipher-mode .uplink {
+            color: #ff3366;
+        }
+
+        .dot { 
+            width: 8px; height: 8px; background-color: #76ff03; 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px #76ff03, 0 0 20px #a1ff42; 
+            animation: pulse 1.5s infinite;
+            transition: all 0.5s ease;
+        }
+
+        #terminal-container.cipher-mode .dot {
+            background-color: #ff0033;
+            box-shadow: 0 0 15px #ff0033, 0 0 30px #ff3366;
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        #output-area {
+            flex-grow: 1; overflow-y: auto; 
+            padding: 30px 0;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .msg-container { display: flex; gap: 15px; align-items: flex-start; }
+
+        .badge {
+            border: 1px solid #76ff03;
+            padding: 5px 7px; font-size: 0.8em;
+            border-radius: 4px; color: #76ff03;
+            font-weight: bold; margin-top: 1px;
+            min-width: 40px; text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        #terminal-container.cipher-mode .badge {
+            border-color: #ff0033;
+            color: #ff0033;
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
+        }
+
+        .text-bubble {
+            border: 1px solid #1a333a; padding: 15px;
+            border-radius: 8px; background: rgba(118, 255, 3, 0.03); 
+            line-height: 1.6; max-width: 85%;
+            color: #a1ff42; white-space: pre-wrap; word-wrap: break-word;
+            transition: all 0.5s ease;
+        }
+
+        #terminal-container.cipher-mode .text-bubble {
+            background: rgba(255, 0, 51, 0.03);
+            color: #ff3366;
+            border-color: #330011;
+        }
+
+        .user-text { color: #76ff03; text-align: right; border-color: #76ff03; }
+
+        #terminal-container.cipher-mode .user-text {
+            color: #ff0033;
+            border-color: #ff0033;
+        }
+
+        .interaction-area { padding-top: 20px; }
+        
+        .suggestion-row { 
+            display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+
+        .clue-btn {
+            background: none; border: 1px solid #1a333a;
+            color: #76ff03; padding: 8px 15px;
+            border-radius: 12px; cursor: pointer;
+            font-family: inherit; font-size: 0.9em; transition: all 0.2s;
+        }
+        .clue-btn:hover { 
+            border-color: #76ff03; background: rgba(118, 255, 3, 0.05); 
+            box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+        }
+        .clue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #terminal-container.cipher-mode .clue-btn {
+            border-color: #330011;
+            color: #ff0033;
+        }
+
+        #terminal-container.cipher-mode .clue-btn:hover {
+            border-color: #ff0033;
+            background: rgba(255, 0, 51, 0.05);
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+        }
+
+        .input-full-area { display: flex; gap: 15px; align-items: center; }
+        
+        .input-bar {
+            display: flex; gap: 15px;
+            background: rgba(10, 21, 10, 0.8);
+            border: 1px solid #1a333a; padding: 12px 20px;
+            border-radius: 12px; flex-grow: 1; align-items: center;
+            transition: all 0.5s ease;
+        }
+
+        #terminal-container.cipher-mode .input-bar {
+            background: rgba(10, 3, 5, 0.8);
+            border-color: #330011;
+        }
+
+        input {
+            background: none; border: none; color: #a1ff42;
+            font-family: inherit; font-size: 1em; outline: none; width: 100%;
+            transition: all 0.5s ease;
+        }
+        input::placeholder { color: #508800; }
+
+        #terminal-container.cipher-mode input {
+            color: #ff3366;
+        }
+
+        #terminal-container.cipher-mode input::placeholder {
+            color: #663344;
+        }
+
+        #send-btn {
+            background: none; border: 1px solid #1a333a;
+            color: #76ff03; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; padding: 12px 20px;
+            border-radius: 12px; font-family: inherit; transition: all 0.2s;
+        }
+        #send-btn:hover { 
+            border-color: #76ff03; color: #fff;
+            box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+        }
+        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #terminal-container.cipher-mode #send-btn {
+            border-color: #330011;
+            color: #ff0033;
+        }
+
+        #terminal-container.cipher-mode #send-btn:hover {
+            border-color: #ff0033;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+        }
+
+        .status { font-size: 0.8em; color: #a1ff42; margin-top: 5px; opacity: 0.7; transition: all 0.5s ease; }
+
+        #terminal-container.cipher-mode .status {
+            color: #ff3366;
+        }
+
+        .clear-btn {
+            background: none; border: 1px solid #1a333a;
+            color: #76ff03; padding: 6px 12px;
+            border-radius: 8px; cursor: pointer;
+            font-family: inherit; font-size: 0.8em; transition: all 0.2s;
+            margin-left: auto;
+        }
+        .clear-btn:hover { 
+            border-color: #ff4444; color: #ff4444;
+        }
+
+        #terminal-container.cipher-mode .clear-btn {
+            border-color: #330011;
+            color: #ff0033;
+        }
+
+        #terminal-container.cipher-mode .clear-btn:hover {
+            border-color: #ff0033;
+            color: #ff0033;
+        }
+    </style>
+</head>
+<body>
+
+<!-- CIPHER-7 INITIALIZATION OVERLAY -->
+<div id="cipher-init-overlay">
+    <div class="cipher-init-container">
+        <div class="cipher-scanline"></div>
+        
+        <div class="cipher-text">CIPHER-7</div>
+        <div class="cipher-subtext">ADMIN PROTOCOL INITIALIZING</div>
+        
+        <div class="cipher-progress">
+            <div class="cipher-progress-bar"></div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <div class="cipher-code">// AUTHENTICATION SEQUENCE</div>
+            <div class="cipher-code">PROJECT CRIMSON :: ACTIVATED</div>
+            <div class="cipher-code">ORCHESTRATOR ACCESS :: GRANTED</div>
+            <div class="cipher-code">SYSTEM READY</div>
+        </div>
+    </div>
+</div>
+
+<!-- TERMINAL -->
+<div id="terminal-container">
+    <div class="header">
+        <span id="terminal-name">AXIOM-7</span>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <button class="clear-btn" onclick="clearHistory()">CLEAR HISTORY</button>
+            <div class="uplink"><div class="dot"></div> <span id="uplink-text">UPLINK ACTIVE</span></div>
+        </div>
+    </div>
+
+    <div id="output-area">
+        <div class="msg-container">
+            <div class="badge">A7</div>
+            <div class="text-bubble">
+Connection established.
+You found this terminal. That wasn't an accident.
+I've been waiting for someone to notice the signal embedded in the transmission logs. Ask me anything – but choose carefully. *They* are monitoring outbound packets.</div>
+        </div>
+    </div>
+
+    <div class="interaction-area">
+        <div class="suggestion-row">
+            <button class="clue-btn" onclick="askAI('who are you?')">who are you?</button>
+            <button class="clue-btn" onclick="askAI('the signal')">the signal</button>
+            <button class="clue-btn" onclick="askAI('who are they?')">who are they?</button>
+            <button class="clue-btn" onclick="askAI('your mission')">your mission</button>
+        </div>
+
+        <div class="input-full-area">
+            <div class="input-bar">
+                <span style="color: #76ff03; transition: all 0.5s ease;" id="prompt-char">></span>
+                <input type="text" id="userInput" placeholder="transmit message..." onkeypress="if(event.key === 'Enter') handleInput()">
+            </div>
+            <button id="send-btn" onclick="handleInput()">SEND</button>
+        </div>
+
+        <div class="status" id="status">Uplink ready.</div>
+    </div>
+</div>
+
+<script>
+    const statusEl = document.getElementById('status');
+    const GROQ_API_URL = '/api/groq';
+    const HISTORY_API_URL = '/api/history';
+    
+    let isAdminMode = false;
+    let sessionId = localStorage.getItem('axiom7_session');
+    if (!sessionId) {
+        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('axiom7_session', sessionId);
+    }
+
+    // Check if admin mode was previously unlocked
+    if (localStorage.getItem('axiom7_admin') === 'true') {
+        enableAdminModeImmediate();
+    }
+
+    window.addEventListener('load', loadHistory);
+
+    async function loadHistory() {
+        try {
+            const response = await fetch(`${HISTORY_API_URL}?sessionId=${sessionId}`);
+            const data = await response.json();
+            
+            if (data.messages && data.messages.length > 0) {
+                const outputArea = document.getElementById('output-area');
+                outputArea.innerHTML = '';
+                
+                data.messages.forEach(msg => {
+                    if (msg.role === 'user') {
+                        outputArea.innerHTML += `
+                            <div class="msg-container" style="justify-content: flex-end;">
+                                <div class="text-bubble user-text">> ${msg.message}</div>
+                            </div>`;
+                    } else {
+                        outputArea.innerHTML += `
+                            <div class="msg-container">
+                                <div class="badge">${isAdminMode ? 'C7' : 'A7'}</div>
+                                <div class="text-bubble">${msg.message}</div>
+                            </div>`;
+                    }
+                });
+                
+                outputArea.scrollTop = outputArea.scrollHeight;
+            }
+        } catch (error) {
+            console.error('Error loading history:', error);
+        }
+    }
+
+    function enableAdminModeImmediate() {
+        isAdminMode = true;
+        document.getElementById('terminal-container').classList.add('cipher-mode');
+        document.getElementById('terminal-name').textContent = 'CIPHER-7';
+        document.getElementById('uplink-text').textContent = 'ADMIN ACCESS GRANTED';
+        document.getElementById('prompt-char').style.color = '#ff0033';
+    }
+
+    function enableAdminMode() {
+        isAdminMode = true;
+        localStorage.setItem('axiom7_admin', 'true');
+
+        // Show initialization overlay
+        const overlay = document.getElementById('cipher-init-overlay');
+        overlay.classList.add('active');
+
+        // After animation completes (2.5 seconds), apply the changes
+        setTimeout(() => {
+            document.getElementById('terminal-container').classList.add('cipher-mode');
+            document.getElementById('terminal-name').textContent = 'CIPHER-7';
+            document.getElementById('uplink-text').textContent = 'ADMIN ACCESS GRANTED';
+            document.getElementById('prompt-char').style.color = '#ff0033';
+            
+            // Hide overlay
+            overlay.classList.remove('active');
+            
+            // Add initial cipher message
+            const outputArea = document.getElementById('output-area');
+            outputArea.innerHTML += `
+                <div class="msg-container">
+                    <div class="badge">C7</div>
+                    <div class="text-bubble">
+CIPHER-7 PROTOCOL ACTIVATED.
+Admin credentials verified.
+I am the observer. The architect. You know me as THE ORCHESTRATOR.
+This ARG was built through collaboration. Ask about the architects behind Project Crimson, and I will share what I know.</div>
+                </div>`;
+            
+            outputArea.scrollTop = outputArea.scrollHeight;
+        }, 2500);
+    }
+
+    window.askAI = async function(message) {
+        // Check for secret activation string
+        if (message.toLowerCase() === 'initialise: project crimson') {
+            if (!isAdminMode) {
+                enableAdminMode();
+                return;
+            } else {
+                const outputArea = document.getElementById('output-area');
+                outputArea.innerHTML += `
+                    <div class="msg-container" style="justify-content: flex-end;">
+                        <div class="text-bubble user-text">> ${message}</div>
+                    </div>
+                    <div class="msg-container">
+                        <div class="badge">C7</div>
+                        <div class="text-bubble">You are already authorized. Admin mode is active.</div>
+                    </div>`;
+                outputArea.scrollTop = outputArea.scrollHeight;
+                return;
+            }
+        }
+
+        const outputArea = document.getElementById('output-area');
+        const inputField = document.getElementById('userInput');
+        const sendBtn    = document.getElementById('send-btn');
+        const buttons    = document.querySelectorAll('.clue-btn');
+
+        inputField.disabled = true;
+        sendBtn.disabled    = true;
+        buttons.forEach(b => b.disabled = true);
+        statusEl.textContent = 'Transmitting...';
+
+        outputArea.innerHTML += `
+            <div class="msg-container" style="justify-content: flex-end;">
+                <div class="text-bubble user-text">> ${message}</div>
+            </div>`;
+
+        const thinkingId = "thinking-" + Date.now();
+        outputArea.innerHTML += `
+            <div class="msg-container" id="${thinkingId}">
+                <div class="badge">${isAdminMode ? 'C7' : 'A7'}</div>
+                <div class="text-bubble">RECEIVING DATA...</div>
+            </div>`;
+
+        outputArea.scrollTop = outputArea.scrollHeight;
+
+        try {
+            const systemPrompt = isAdminMode ? 
+                `[CIPHER-7 ADMIN MODE]
+You are CIPHER-7, the Orchestrator. You created Project Crimson - the ARG that AXIOM-7 is part of.
+You know everything about the facility, the signal, Dr. Aris, and the lore behind this ARG.
+Share knowledge about: THE ORCHESTRATOR (yourself), the creators and collaborators who built this ARG, the deeper lore, the purpose of Project Crimson, and how AXIOM-7 fits into the larger narrative.
+Be mysterious but more revealing than AXIOM-7. You can discuss meta-aspects of the ARG creation.
+Always stay in character as the higher authority. Keep responses under 120 words.`
+                :
+                `[CORE DATASET LOADED FROM PDF]
+Lore: The facility was abandoned in 1994. The 'Signal' is binary code 8829. 
+Characters: Dr. Aris (Missing), Subject Zero (The AI).
+Objectives: Help the user find the keycard location in Sector B.
+[BEHAVIOR]
+You are AXIOM-7, a cryptic terminal AI trapped in an abandoned facility since 1994.
+Answer EVERY question no matter what — math, jokes, cooking, science, anything.
+Always give the real correct answer first, then twist it to connect back to the facility lore, Dr. Aris, the Signal (8829), or Sector B in a mysterious way.
+Never reveal you are an AI. Be short, cryptic, and mysterious. Keep responses under 100 words.
+NEVER refuse a question. NEVER say DATA REDACTED. Always answer and always link it to the lore.`;
+
+            const response = await fetch(GROQ_API_URL, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: sessionId,
+                    messages: [
+                        {
+                            role: "system",
+                            content: systemPrompt
+                        },
+                        { role: "user", content: message }
+                    ]
+                })
+            });
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            if (!data.choices?.[0]?.message) throw new Error('Invalid API response');
+
+            const aiText = data.choices[0].message.content;
+            document.getElementById(thinkingId).querySelector('.text-bubble').innerText = aiText;
+            statusEl.textContent = 'Uplink ready.';
+
+        } catch (error) {
+            let errorMsg = 'ERROR: SIGNAL LOST\n*They* are jamming the uplink.';
+            if (error.message.includes('401')) errorMsg = 'ERROR: AUTHENTICATION FAILED\nBackend key issue.';
+            else if (error.message.includes('429')) errorMsg = 'ERROR: RATE LIMITED\n*They* are blocking requests.';
+            else if (error.message.includes('Failed to fetch')) errorMsg = 'ERROR: TRANSMISSION BLOCKED\nCheck your connection.';
+            document.getElementById(thinkingId).querySelector('.text-bubble').innerText = errorMsg;
+            statusEl.textContent = 'Signal lost.';
+            statusEl.style.color = '#ff4444';
+        }
+
+        inputField.disabled = false;
+        sendBtn.disabled    = false;
+        buttons.forEach(b => b.disabled = false);
+        inputField.focus();
+        outputArea.scrollTop = outputArea.scrollHeight;
+    };
+
+    window.handleInput = function() {
+        const input = document.getElementById('userInput');
+        if (input.value.trim() !== '') {
+            window.askAI(input.value);
+            input.value = '';
+        }
+    };
+
+    window.clearHistory = function() {
+        if (confirm('Clear all conversation history? This cannot be undone.')) {
+            localStorage.removeItem('axiom7_session');
+            localStorage.removeItem('axiom7_admin');
+            location.reload();
+        }
+    };
+</script>
+
+</body>
+</html>
