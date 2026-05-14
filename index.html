@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,397 +14,420 @@
             overflow: hidden;
         }
 
-```
-    /* ── TERMINAL ── */
-    #terminal-container {
-        height: 100vh; width: 100vw;
-        display: flex; flex-direction: column;
-        padding: 20px;
-        border: 8px solid #0a150a;
-        transition: all 0.5s ease;
-    }
+        /* ── TERMINAL ── */
+        #terminal-container {
+            height: 100vh; width: 100vw;
+            display: flex; flex-direction: column;
+            padding: 20px;
+            border: 8px solid #0a150a;
+            transition: all 0.5s ease;
+            box-sizing: border-box;
+        }
 
-    .header {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 5px 0;
-        border-bottom: 1px solid #1a331a;
-        letter-spacing: 2px; font-weight: bold;
-        font-size: 0.9em; text-transform: uppercase;
-        transition: all 0.5s ease;
-    }
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #1a331a;
+            letter-spacing: 2px; font-weight: bold;
+            font-size: 0.9em; text-transform: uppercase;
+            transition: all 0.5s ease;
+        }
 
-    .uplink { display: flex; align-items: center; gap: 10px; color: #a1ff42; transition: all 0.5s ease; }
+        .header-right {
+            display: flex; align-items: center; gap: 20px;
+        }
 
-    .dot { 
-        width: 8px; height: 8px; background-color: #76ff03; 
-        border-radius: 50%; 
-        box-shadow: 0 0 10px #76ff03, 0 0 20px #a1ff42; 
-        animation: pulse 1.5s infinite;
-        transition: all 0.5s ease;
-    }
+        .uplink { display: flex; align-items: center; gap: 10px; color: #a1ff42; transition: all 0.5s ease; }
 
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .dot { 
+            width: 8px; height: 8px; background-color: #76ff03; 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px #76ff03, 0 0 20px #a1ff42; 
+            animation: pulse 1.5s infinite;
+            transition: all 0.5s ease;
+        }
 
-    #output-area {
-        flex-grow: 1; overflow-y: auto; 
-        padding: 30px 0;
-        display: flex; flex-direction: column; gap: 20px;
-    }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
-    .msg-container { display: flex; gap: 15px; align-items: flex-start; }
+        #output-area {
+            flex: 1; overflow-y: auto; 
+            padding: 30px 0;
+            display: flex; flex-direction: column; gap: 20px;
+            min-height: 0;
+        }
 
-    .badge {
-        border: 1px solid #76ff03;
-        padding: 5px 7px; font-size: 0.8em;
-        border-radius: 4px; color: #76ff03;
-        font-weight: bold; margin-top: 1px;
-        min-width: 40px; text-align: center;
-        transition: all 0.5s ease;
-    }
+        .msg-container { display: flex; gap: 15px; align-items: flex-start; }
 
-    .text-bubble {
-        border: 1px solid #1a333a; padding: 15px;
-        border-radius: 8px; background: rgba(118, 255, 3, 0.03); 
-        line-height: 1.6; max-width: 85%;
-        color: #a1ff42; white-space: pre-wrap; word-wrap: break-word;
-        transition: all 0.5s ease;
-    }
+        .badge {
+            border: 1px solid #76ff03;
+            padding: 5px 7px; font-size: 0.8em;
+            border-radius: 4px; color: #76ff03;
+            font-weight: bold; margin-top: 1px;
+            min-width: 40px; text-align: center;
+            transition: all 0.5s ease;
+            flex-shrink: 0;
+        }
 
-    .user-text { color: #76ff03; text-align: right; border-color: #76ff03; }
+        .text-bubble {
+            border: 1px solid #1a333a; padding: 15px;
+            border-radius: 8px; background: rgba(118, 255, 3, 0.03); 
+            line-height: 1.6; max-width: 85%;
+            color: #a1ff42; white-space: pre-wrap; word-wrap: break-word;
+            transition: all 0.5s ease;
+        }
 
-    .interaction-area { padding-top: 20px; }
-    
-    .suggestion-row { 
-        display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;
-    }
+        .user-text { color: #76ff03; text-align: right; border-color: #76ff03; }
 
-    .clue-btn {
-        background: none; border: 1px solid #1a333a;
-        color: #76ff03; padding: 8px 15px;
-        border-radius: 12px; cursor: pointer;
-        font-family: inherit; font-size: 0.9em; transition: all 0.2s;
-    }
-    .clue-btn:hover { 
-        border-color: #76ff03; background: rgba(118, 255, 3, 0.05); 
-        box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
-    }
-    .clue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .interaction-area { 
+            padding-top: 20px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .suggestion-row { 
+            display: flex; gap: 10px; margin-bottom: 0; flex-wrap: wrap;
+        }
 
-    .input-full-area { display: flex; gap: 15px; align-items: center; }
-    
-    .input-bar {
-        display: flex; gap: 15px;
-        background: rgba(10, 21, 10, 0.8);
-        border: 1px solid #1a333a; padding: 12px 20px;
-        border-radius: 12px; flex-grow: 1; align-items: center;
-        transition: all 0.5s ease;
-    }
+        .clue-btn {
+            background: none; border: 1px solid #1a333a;
+            color: #76ff03; padding: 8px 15px;
+            border-radius: 12px; cursor: pointer;
+            font-family: inherit; font-size: 0.9em; transition: all 0.2s;
+        }
+        .clue-btn:hover { 
+            border-color: #76ff03; background: rgba(118, 255, 3, 0.05); 
+            box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+        }
+        .clue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    input {
-        background: none; border: none; color: #a1ff42;
-        font-family: inherit; font-size: 1em; outline: none; width: 100%;
-        transition: all 0.5s ease;
-    }
-    input::placeholder { color: #508800; }
+        .input-full-area { display: flex; gap: 15px; align-items: center; }
+        
+        .input-bar {
+            display: flex; gap: 15px;
+            background: rgba(10, 21, 10, 0.8);
+            border: 1px solid #1a333a; padding: 12px 20px;
+            border-radius: 12px; flex-grow: 1; align-items: center;
+            transition: all 0.5s ease;
+        }
 
-    #send-btn {
-        background: none; border: 1px solid #1a333a;
-        color: #76ff03; font-weight: bold; cursor: pointer;
-        text-transform: uppercase; padding: 12px 20px;
-        border-radius: 12px; font-family: inherit; transition: all 0.2s;
-    }
-    #send-btn:hover { 
-        border-color: #76ff03; color: #fff;
-        box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
-    }
-    #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        input {
+            background: none; border: none; color: #a1ff42;
+            font-family: inherit; font-size: 1em; outline: none; width: 100%;
+            transition: all 0.5s ease;
+        }
+        input::placeholder { color: #508800; }
 
-    .status { font-size: 0.8em; color: #a1ff42; margin-top: 5px; opacity: 0.7; transition: all 0.5s ease; }
+        #send-btn {
+            background: none; border: 1px solid #1a333a;
+            color: #76ff03; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; padding: 12px 20px;
+            border-radius: 12px; font-family: inherit; transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        #send-btn:hover { 
+            border-color: #76ff03; color: #fff;
+            box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+        }
+        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ── CIPHER-7 MODE ── */
-    #terminal-container.cipher-mode {
-        border-color: #ff0033;
-        background-color: #0a0301;
-    }
+        .status { font-size: 0.8em; color: #a1ff42; margin-top: 5px; opacity: 0.7; transition: all 0.5s ease; }
 
-    #terminal-container.cipher-mode .header {
-        border-bottom-color: #ff0033;
-    }
+        .clear-btn {
+            background: none; border: 1px solid #1a333a;
+            color: #76ff03; padding: 6px 12px;
+            border-radius: 8px; cursor: pointer;
+            font-family: inherit; font-size: 0.8em; transition: all 0.2s;
+        }
+        .clear-btn:hover { 
+            border-color: #ff4444; color: #ff4444;
+        }
 
-    #terminal-container.cipher-mode .dot {
-        background-color: #ff0033;
-        box-shadow: 0 0 15px #ff0033, 0 0 30px #ff3366;
-    }
+        /* ── CIPHER-7 MODE ── */
+        #terminal-container.cipher-mode {
+            border-color: #ff0033;
+            background-color: #0a0301;
+        }
 
-    #terminal-container.cipher-mode .uplink {
-        color: #ff3366;
-    }
+        #terminal-container.cipher-mode .header {
+            border-bottom-color: #ff0033;
+        }
 
-    #terminal-container.cipher-mode .badge {
-        border-color: #ff0033;
-        color: #ff0033;
-        box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
-    }
+        #terminal-container.cipher-mode .dot {
+            background-color: #ff0033;
+            box-shadow: 0 0 15px #ff0033, 0 0 30px #ff3366;
+        }
 
-    #terminal-container.cipher-mode .text-bubble {
-        background: rgba(255, 0, 51, 0.03);
-        color: #ff3366;
-        border-color: #330011;
-    }
+        #terminal-container.cipher-mode .uplink {
+            color: #ff3366;
+        }
 
-    #terminal-container.cipher-mode .user-text {
-        color: #ff0033;
-        border-color: #ff0033;
-    }
+        #terminal-container.cipher-mode .badge {
+            border-color: #ff0033;
+            color: #ff0033;
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
+        }
 
-    #terminal-container.cipher-mode .input-bar {
-        background: rgba(10, 3, 5, 0.8);
-        border-color: #330011;
-    }
+        #terminal-container.cipher-mode .text-bubble {
+            background: rgba(255, 0, 51, 0.03);
+            color: #ff3366;
+            border-color: #330011;
+        }
 
-    #terminal-container.cipher-mode input {
-        color: #ff3366;
-    }
+        #terminal-container.cipher-mode .user-text {
+            color: #ff0033;
+            border-color: #ff0033;
+        }
 
-    #terminal-container.cipher-mode input::placeholder {
-        color: #663344;
-    }
+        #terminal-container.cipher-mode .input-bar {
+            background: rgba(10, 3, 5, 0.8);
+            border-color: #330011;
+        }
 
-    #terminal-container.cipher-mode .clue-btn {
-        border-color: #330011;
-        color: #ff0033;
-    }
+        #terminal-container.cipher-mode input {
+            color: #ff3366;
+        }
 
-    #terminal-container.cipher-mode .clue-btn:hover {
-        border-color: #ff0033;
-        background: rgba(255, 0, 51, 0.05);
-        box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
-    }
+        #terminal-container.cipher-mode input::placeholder {
+            color: #663344;
+        }
 
-    #terminal-container.cipher-mode #send-btn {
-        border-color: #330011;
-        color: #ff0033;
-    }
+        #terminal-container.cipher-mode .clue-btn {
+            border-color: #330011;
+            color: #ff0033;
+        }
 
-    #terminal-container.cipher-mode #send-btn:hover {
-        border-color: #ff0033;
-        color: #fff;
-        box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
-    }
+        #terminal-container.cipher-mode .clue-btn:hover {
+            border-color: #ff0033;
+            background: rgba(255, 0, 51, 0.05);
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+        }
 
-    #terminal-container.cipher-mode .status {
-        color: #ff3366;
-    }
+        #terminal-container.cipher-mode #send-btn {
+            border-color: #330011;
+            color: #ff0033;
+        }
 
-    /* ── CIPHER INITIALIZATION OVERLAY ── */
-    #cipher-init-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(3, 8, 3, 0.95);
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        gap: 30px;
-    }
+        #terminal-container.cipher-mode #send-btn:hover {
+            border-color: #ff0033;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+        }
 
-    #cipher-init-overlay.active {
-        display: flex;
-        animation: overlayFadeIn 0.3s ease;
-    }
+        #terminal-container.cipher-mode .clear-btn {
+            border-color: #330011;
+            color: #ff0033;
+        }
 
-    @keyframes overlayFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
+        #terminal-container.cipher-mode .clear-btn:hover {
+            border-color: #ff0033;
+            color: #ff0033;
+        }
 
-    .cipher-init-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
+        #terminal-container.cipher-mode .status {
+            color: #ff3366;
+        }
 
-    .cipher-scanline {
-        width: 300px;
-        height: 200px;
-        border: 2px solid #ff0033;
-        position: relative;
-        box-shadow: 0 0 30px rgba(255, 0, 51, 0.5), inset 0 0 20px rgba(255, 0, 51, 0.1);
-        background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 51, 0.1) 50%, transparent 100%);
-    }
+        /* ── CIPHER INITIALIZATION OVERLAY ── */
+        #cipher-init-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 8, 3, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 30px;
+        }
 
-    .cipher-scanline::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(180deg, transparent 0%, rgba(255, 0, 51, 0.3) 50%, transparent 100%);
-        animation: scanlines 2s linear infinite;
-    }
+        #cipher-init-overlay.active {
+            display: flex;
+            animation: overlayFadeIn 0.3s ease;
+        }
 
-    @keyframes scanlines {
-        0% { transform: translateY(-100%); }
-        100% { transform: translateY(100%); }
-    }
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-    .cipher-text {
-        text-align: center;
-        color: #ff0033;
-        font-size: 1.2em;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        font-weight: bold;
-        text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
-        animation: textGlow 1.5s ease-in-out infinite;
-    }
+        .cipher-init-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
 
-    @keyframes textGlow {
-        0%, 100% { 
+        .cipher-scanline {
+            width: 300px;
+            height: 200px;
+            border: 2px solid #ff0033;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 0, 51, 0.5), inset 0 0 20px rgba(255, 0, 51, 0.1);
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 51, 0.1) 50%, transparent 100%);
+        }
+
+        .cipher-scanline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 0, 51, 0.3) 50%, transparent 100%);
+            animation: scanlines 2s linear infinite;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .cipher-text {
+            text-align: center;
+            color: #ff0033;
+            font-size: 1.2em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
             text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
+            animation: textGlow 1.5s ease-in-out infinite;
         }
-        50% { 
-            text-shadow: 0 0 20px #ff0033, 0 0 40px rgba(255, 0, 51, 0.8);
+
+        @keyframes textGlow {
+            0%, 100% { 
+                text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
+            }
+            50% { 
+                text-shadow: 0 0 20px #ff0033, 0 0 40px rgba(255, 0, 51, 0.8);
+            }
         }
-    }
 
-    .cipher-subtext {
-        color: #ff3366;
-        font-size: 0.9em;
-        letter-spacing: 2px;
-        opacity: 0.8;
-        animation: fadeInOut 1s ease-in-out infinite 0.3s;
-    }
-
-    @keyframes fadeInOut {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 1; }
-    }
-
-    .cipher-progress {
-        width: 250px;
-        height: 3px;
-        background: rgba(255, 0, 51, 0.2);
-        border: 1px solid #ff0033;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .cipher-progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #ff0033, #ff3366);
-        box-shadow: 0 0 10px #ff0033;
-        animation: progress 2s ease-in-out forwards;
-    }
-
-    @keyframes progress {
-        0% { width: 0%; }
-        100% { width: 100%; }
-    }
-
-    .cipher-code {
-        font-family: 'Courier New', monospace;
-        color: #ff0033;
-        font-size: 0.85em;
-        letter-spacing: 1px;
-        line-height: 1.8;
-        text-align: center;
-        max-width: 400px;
-        opacity: 0;
-        animation: codeReveal 0.5s ease-in-out forwards;
-    }
-
-    .cipher-code:nth-child(1) { animation-delay: 0.3s; }
-    .cipher-code:nth-child(2) { animation-delay: 0.6s; }
-    .cipher-code:nth-child(3) { animation-delay: 0.9s; }
-    .cipher-code:nth-child(4) { animation-delay: 1.2s; }
-
-    @keyframes codeReveal {
-        from { 
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to { 
+        .cipher-subtext {
+            color: #ff3366;
+            font-size: 0.9em;
+            letter-spacing: 2px;
             opacity: 0.8;
-            transform: translateY(0);
+            animation: fadeInOut 1s ease-in-out infinite 0.3s;
         }
-    }
-</style>
-```
 
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .cipher-progress {
+            width: 250px;
+            height: 3px;
+            background: rgba(255, 0, 51, 0.2);
+            border: 1px solid #ff0033;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cipher-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0033, #ff3366);
+            box-shadow: 0 0 10px #ff0033;
+            animation: progress 2s ease-in-out forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .cipher-code {
+            font-family: 'Courier New', monospace;
+            color: #ff0033;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 400px;
+            opacity: 0;
+            animation: codeReveal 0.5s ease-in-out forwards;
+        }
+
+        .cipher-code:nth-child(1) { animation-delay: 0.3s; }
+        .cipher-code:nth-child(2) { animation-delay: 0.6s; }
+        .cipher-code:nth-child(3) { animation-delay: 0.9s; }
+        .cipher-code:nth-child(4) { animation-delay: 1.2s; }
+
+        @keyframes codeReveal {
+            from { 
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to { 
+                opacity: 0.8;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 <body>
 
 <!-- CIPHER-7 INITIALIZATION OVERLAY -->
-
 <div id="cipher-init-overlay">
     <div class="cipher-init-container">
         <div class="cipher-scanline"></div>
-
-```
-    <div class="cipher-text">CIPHER-7</div>
-    <div class="cipher-subtext">ADMIN PROTOCOL INITIALIZING</div>
-    
-    <div class="cipher-progress">
-        <div class="cipher-progress-bar"></div>
+        
+        <div class="cipher-text">CIPHER-7</div>
+        <div class="cipher-subtext">ADMIN PROTOCOL INITIALIZING</div>
+        
+        <div class="cipher-progress">
+            <div class="cipher-progress-bar"></div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <div class="cipher-code">// AUTHENTICATION SEQUENCE</div>
+            <div class="cipher-code">PROJECT CRIMSON :: ACTIVATED</div>
+            <div class="cipher-code">ORCHESTRATOR ACCESS :: GRANTED</div>
+            <div class="cipher-code">SYSTEM READY</div>
+        </div>
     </div>
-    
-    <div style="margin-top: 20px;">
-        <div class="cipher-code">// AUTHENTICATION SEQUENCE</div>
-        <div class="cipher-code">PROJECT CRIMSON :: ACTIVATED</div>
-        <div class="cipher-code">ORCHESTRATOR ACCESS :: GRANTED</div>
-        <div class="cipher-code">SYSTEM READY</div>
-    </div>
-</div>
-```
-
 </div>
 
 <!-- TERMINAL -->
-
 <div id="terminal-container">
     <div class="header">
         <span id="terminal-name">AXIOM-7</span>
-        <div class="uplink"><div class="dot"></div> <span id="uplink-text">UPLINK ACTIVE</span></div>
-    </div>
-
-```
-<div id="output-area">
-    <div class="msg-container">
-        <div class="badge">A7</div>
-        <div class="text-bubble">
-```
-
-Connection established.
-You found this terminal. That wasn’t an accident.
-I’ve been waiting for someone to notice the signal embedded in the transmission logs. Ask me anything – but choose carefully. *They* are monitoring outbound packets.</div>
-</div>
-</div>
-
-```
-<div class="interaction-area">
-    <div class="suggestion-row">
-        <button class="clue-btn" onclick="askAI('who are you?')">who are you?</button>
-        <button class="clue-btn" onclick="askAI('the signal')">the signal</button>
-        <button class="clue-btn" onclick="askAI('who are they?')">who are they?</button>
-        <button class="clue-btn" onclick="askAI('your mission')">your mission</button>
-    </div>
-
-    <div class="input-full-area">
-        <div class="input-bar">
-            <span style="color: #76ff03; transition: all 0.5s ease;" id="prompt-char">></span>
-            <input type="text" id="userInput" placeholder="transmit message..." onkeypress="if(event.key === 'Enter') handleInput()">
+        <div class="header-right">
+            <button class="clear-btn" onclick="clearHistory()">CLEAR HISTORY</button>
+            <div class="uplink"><div class="dot"></div> <span id="uplink-text">UPLINK ACTIVE</span></div>
         </div>
-        <button id="send-btn" onclick="handleInput()">SEND</button>
     </div>
 
-    <div class="status" id="status">Uplink ready.</div>
-</div>
-```
+    <div id="output-area">
+        <div class="msg-container">
+            <div class="badge">A7</div>
+            <div class="text-bubble">
+Connection established.
+You found this terminal. That wasn't an accident.
+I've been waiting for someone to notice the signal embedded in the transmission logs. Ask me anything – but choose carefully. *They* are monitoring outbound packets.</div>
+        </div>
+    </div>
 
+    <div class="interaction-area">
+        <div class="suggestion-row">
+            <button class="clue-btn" onclick="askAI('who are you?')">who are you?</button>
+            <button class="clue-btn" onclick="askAI('the signal')">the signal</button>
+            <button class="clue-btn" onclick="askAI('who are they?')">who are they?</button>
+            <button class="clue-btn" onclick="askAI('your mission')">your mission</button>
+        </div>
+
+        <div class="input-full-area">
+            <div class="input-bar">
+                <span style="color: #76ff03; transition: all 0.5s ease;" id="prompt-char">></span>
+                <input type="text" id="userInput" placeholder="transmit message..." onkeypress="if(event.key === 'Enter') handleInput()">
+            </div>
+            <button id="send-btn" onclick="handleInput()">SEND</button>
+        </div>
+
+        <div class="status" id="status">Uplink ready.</div>
+    </div>
 </div>
 
 <script>
@@ -447,16 +469,17 @@ I’ve been waiting for someone to notice the signal embedded in the transmissio
             
             // Add initial cipher message
             const outputArea = document.getElementById('output-area');
-            outputArea.innerHTML += `
-                <div class="msg-container">
-                    <div class="badge">C7</div>
-                    <div class="text-bubble">
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'msg-container';
+            messageDiv.innerHTML = `
+                <div class="badge">C7</div>
+                <div class="text-bubble">
 CIPHER-7 PROTOCOL ACTIVATED.
 Admin credentials verified.
 I am the observer. The architect. You know me as THE ORCHESTRATOR.
-This ARG was built through collaboration. Ask about the architects behind Project Crimson, and I will share what I know.</div>
-                </div>`;
+This ARG was built through collaboration. Ask about the architects behind Project Crimson, and I will share what I know.</div>`;
             
+            outputArea.appendChild(messageDiv);
             outputArea.scrollTop = outputArea.scrollHeight;
         }, 2500);
     }
@@ -470,14 +493,20 @@ This ARG was built through collaboration. Ask about the architects behind Projec
                 return;
             } else {
                 const outputArea = document.getElementById('output-area');
-                outputArea.innerHTML += `
-                    <div class="msg-container" style="justify-content: flex-end;">
-                        <div class="text-bubble user-text">> ${message}</div>
-                    </div>
-                    <div class="msg-container">
-                        <div class="badge">C7</div>
-                        <div class="text-bubble">You are already authorized. Admin mode is active.</div>
-                    </div>`;
+                
+                const userDiv = document.createElement('div');
+                userDiv.className = 'msg-container';
+                userDiv.style.justifyContent = 'flex-end';
+                userDiv.innerHTML = `<div class="text-bubble user-text">> ${message}</div>`;
+                outputArea.appendChild(userDiv);
+                
+                const responseDiv = document.createElement('div');
+                responseDiv.className = 'msg-container';
+                responseDiv.innerHTML = `
+                    <div class="badge">C7</div>
+                    <div class="text-bubble">You are already authorized. Admin mode is active.</div>`;
+                outputArea.appendChild(responseDiv);
+                
                 outputArea.scrollTop = outputArea.scrollHeight;
                 return;
             }
@@ -493,17 +522,20 @@ This ARG was built through collaboration. Ask about the architects behind Projec
         buttons.forEach(b => b.disabled = true);
         statusEl.textContent = 'Transmitting...';
 
-        outputArea.innerHTML += `
-            <div class="msg-container" style="justify-content: flex-end;">
-                <div class="text-bubble user-text">> ${message}</div>
-            </div>`;
+        const userDiv = document.createElement('div');
+        userDiv.className = 'msg-container';
+        userDiv.style.justifyContent = 'flex-end';
+        userDiv.innerHTML = `<div class="text-bubble user-text">> ${message}</div>`;
+        outputArea.appendChild(userDiv);
 
         const thinkingId = "thinking-" + Date.now();
-        outputArea.innerHTML += `
-            <div class="msg-container" id="${thinkingId}">
-                <div class="badge">${isAdminMode ? 'C7' : 'A7'}</div>
-                <div class="text-bubble">RECEIVING DATA...</div>
-            </div>`;
+        const thinkingDiv = document.createElement('div');
+        thinkingDiv.id = thinkingId;
+        thinkingDiv.className = 'msg-container';
+        thinkingDiv.innerHTML = `
+            <div class="badge">${isAdminMode ? 'C7' : 'A7'}</div>
+            <div class="text-bubble">RECEIVING DATA...</div>`;
+        outputArea.appendChild(thinkingDiv);
 
         outputArea.scrollTop = outputArea.scrollHeight;
 
@@ -574,6 +606,33 @@ NEVER refuse a question. NEVER say DATA REDACTED. Always answer and always link 
         if (input.value.trim() !== '') {
             window.askAI(input.value);
             input.value = '';
+        }
+    };
+
+    window.clearHistory = function() {
+        if (confirm('Clear all conversation history and reset to AXIOM-7?')) {
+            localStorage.removeItem('axiom7_admin');
+            isAdminMode = false;
+            
+            // Reset UI
+            document.getElementById('terminal-container').classList.remove('cipher-mode');
+            document.getElementById('terminal-name').textContent = 'AXIOM-7';
+            document.getElementById('uplink-text').textContent = 'UPLINK ACTIVE';
+            document.getElementById('prompt-char').style.color = '#76ff03';
+            
+            // Clear messages but keep initial message
+            const outputArea = document.getElementById('output-area');
+            outputArea.innerHTML = `
+                <div class="msg-container">
+                    <div class="badge">A7</div>
+                    <div class="text-bubble">
+Connection established.
+You found this terminal. That wasn't an accident.
+I've been waiting for someone to notice the signal embedded in the transmission logs. Ask me anything – but choose carefully. *They* are monitoring outbound packets.</div>
+                </div>`;
+            
+            statusEl.textContent = 'Uplink ready.';
+            statusEl.style.color = '#a1ff42';
         }
     };
 </script>
