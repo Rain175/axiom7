@@ -366,41 +366,30 @@
             }
         }
 
-        /* ── MOBILE ── */
-        @media (max-width: 600px) {
+        /* ── MOBILE RESPONSIVE STYLES ── */
+        @media (max-width: 768px) {
             #terminal-container {
                 padding: 12px;
-                border-width: 4px;
+                border-width: 5px;
             }
 
             .header {
                 font-size: 0.75em;
-                letter-spacing: 1px;
-                gap: 8px;
-                flex-wrap: nowrap;
+                padding: 8px 0;
+                gap: 10px;
+                flex-wrap: wrap;
             }
 
             .header-right {
                 gap: 10px;
-                flex-shrink: 0;
-            }
-
-            /* Hide the word "UPLINK ACTIVE" / "ADMIN ACCESS GRANTED" on very small screens,
-               keep only the dot indicator */
-            #uplink-text {
-                display: none;
-            }
-
-            /* Make "CLEAR HISTORY" shorter */
-            .clear-btn {
-                font-size: 0.7em;
-                padding: 5px 8px;
-                letter-spacing: 0;
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 8px;
             }
 
             #output-area {
                 padding: 15px 0;
-                gap: 14px;
+                gap: 12px;
             }
 
             .msg-container {
@@ -408,15 +397,16 @@
             }
 
             .badge {
-                font-size: 0.7em;
                 padding: 4px 6px;
-                min-width: 34px;
+                font-size: 0.75em;
+                min-width: 35px;
             }
 
             .text-bubble {
                 max-width: 100%;
-                padding: 10px 12px;
+                padding: 12px;
                 font-size: 0.9em;
+                border-radius: 6px;
             }
 
             .interaction-area {
@@ -424,30 +414,27 @@
                 gap: 10px;
             }
 
-            /* Suggestion buttons: 2-per-row grid so they're tidy and tappable */
             .suggestion-row {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
+                gap: 6px;
             }
 
             .clue-btn {
+                padding: 6px 10px;
                 font-size: 0.8em;
-                padding: 10px 8px;
-                border-radius: 10px;
-                text-align: center;
-                /* Ensure touch target is tall enough */
-                min-height: 40px;
+                border-radius: 8px;
+                flex: 1 1 calc(50% - 3px);
+                min-width: 0;
             }
 
-            /* Stack input + send button vertically */
             .input-full-area {
-                flex-direction: column;
                 gap: 8px;
+                flex-direction: column;
             }
 
             .input-bar {
-                padding: 12px 14px;
+                gap: 10px;
+                padding: 10px 15px;
+                border-radius: 10px;
                 width: 100%;
             }
 
@@ -456,22 +443,48 @@
             }
 
             #send-btn {
+                padding: 10px 16px;
+                font-size: 0.8em;
                 width: 100%;
-                padding: 13px;
-                font-size: 0.85em;
-                letter-spacing: 2px;
+                border-radius: 10px;
             }
 
             .status {
                 font-size: 0.75em;
-                margin-top: 2px;
+                margin-top: 8px;
             }
 
-            /* Cipher overlay: scale down the scanline box */
+            .clear-btn {
+                padding: 5px 10px;
+                font-size: 0.7em;
+                border-radius: 6px;
+            }
+
+            .uplink {
+                gap: 6px;
+                font-size: 0.8em;
+            }
+
+            .dot {
+                width: 6px;
+                height: 6px;
+            }
+        }
+
+        /* ── MOBILE CIPHER MODE RESPONSIVE ── */
+        @media (max-width: 768px) {
+            #cipher-init-overlay {
+                padding: 20px;
+            }
+
+            .cipher-init-container {
+                gap: 15px;
+            }
+
             .cipher-scanline {
-                width: 90vw;
-                max-width: 280px;
-                height: 140px;
+                width: min(90vw, 250px);
+                height: 150px;
+                border-width: 1px;
             }
 
             .cipher-text {
@@ -479,9 +492,14 @@
                 letter-spacing: 2px;
             }
 
+            .cipher-subtext {
+                font-size: 0.8em;
+                letter-spacing: 1px;
+            }
+
             .cipher-progress {
-                width: 80vw;
-                max-width: 230px;
+                width: min(80vw, 200px);
+                height: 2px;
             }
 
             .cipher-code {
@@ -490,23 +508,70 @@
             }
         }
 
-        /* Extra small (≤380px) tweaks */
-        @media (max-width: 380px) {
+        /* ── EXTRA SMALL PHONES (max-width: 480px) ── */
+        @media (max-width: 480px) {
             #terminal-container {
                 padding: 8px;
+                border-width: 3px;
             }
 
             .header {
+                font-size: 0.65em;
+                padding: 5px 0;
+            }
+
+            .header-right {
+                gap: 6px;
+                margin-top: 6px;
+            }
+
+            .uplink {
                 font-size: 0.7em;
             }
 
+            #output-area {
+                padding: 10px 0;
+                gap: 10px;
+            }
+
             .text-bubble {
+                max-width: 100%;
+                padding: 10px;
                 font-size: 0.85em;
             }
 
             .clue-btn {
+                padding: 5px 8px;
                 font-size: 0.75em;
-                padding: 9px 6px;
+                flex: 1 1 calc(50% - 3px);
+            }
+
+            .input-bar {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+
+            input {
+                font-size: 0.9em;
+            }
+
+            #send-btn {
+                padding: 8px 12px;
+                font-size: 0.75em;
+            }
+
+            .status {
+                font-size: 0.7em;
+            }
+
+            .clear-btn {
+                padding: 4px 8px;
+                font-size: 0.65em;
+            }
+
+            .dot {
+                width: 5px;
+                height: 5px;
             }
         }
     </style>
@@ -565,7 +630,7 @@ I've been waiting for someone to notice the signal embedded in the transmission 
         <div class="input-full-area">
             <div class="input-bar">
                 <span style="color: #76ff03; transition: all 0.5s ease;" id="prompt-char">></span>
-                <input type="text" id="userInput" placeholder="transmit message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" onkeypress="if(event.key === 'Enter') handleInput()">
+                <input type="text" id="userInput" placeholder="transmit message..." onkeypress="if(event.key === 'Enter') handleInput()">
             </div>
             <button id="send-btn" onclick="handleInput()">SEND</button>
         </div>
