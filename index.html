@@ -1,8 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>AXIOM-7 TERMINAL</title>
     <style>
         * { box-sizing: border-box; }
@@ -14,427 +15,568 @@
             overflow: hidden;
         }
 
-        /* ── TERMINAL ── */
+```
+    /* ── TERMINAL ── */
+    #terminal-container {
+        height: 100vh; width: 100vw;
+        display: flex; flex-direction: column;
+        padding: 15px;
+        border: 3px solid #0a150a;
+        transition: all 0.5s ease;
+        box-sizing: border-box;
+    }
+
+    .header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 5px 0;
+        border-bottom: 1px solid #1a331a;
+        letter-spacing: 1px; font-weight: bold;
+        font-size: 0.85em; text-transform: uppercase;
+        transition: all 0.5s ease;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .header-right {
+        display: flex; align-items: center; gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .uplink { display: flex; align-items: center; gap: 8px; color: #a1ff42; transition: all 0.5s ease; font-size: 0.9em; }
+
+    .dot { 
+        width: 6px; height: 6px; background-color: #76ff03; 
+        border-radius: 50%; 
+        box-shadow: 0 0 10px #76ff03, 0 0 20px #a1ff42; 
+        animation: pulse 1.5s infinite;
+        transition: all 0.5s ease;
+        flex-shrink: 0;
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    #output-area {
+        flex: 1; overflow-y: auto; 
+        padding: 15px 0;
+        display: flex; flex-direction: column; gap: 12px;
+        min-height: 0;
+    }
+
+    .msg-container { display: flex; gap: 8px; align-items: flex-start; }
+
+    .badge {
+        border: 1px solid #76ff03;
+        padding: 4px 6px; font-size: 0.7em;
+        border-radius: 3px; color: #76ff03;
+        font-weight: bold; margin-top: 2px;
+        min-width: 35px; text-align: center;
+        transition: all 0.5s ease;
+        flex-shrink: 0;
+    }
+
+    .text-bubble {
+        border: 1px solid #1a333a; padding: 10px;
+        border-radius: 6px; background: rgba(118, 255, 3, 0.03); 
+        line-height: 1.5; 
+        color: #a1ff42; white-space: pre-wrap; word-wrap: break-word;
+        transition: all 0.5s ease;
+        font-size: 0.9em;
+        word-break: break-word;
+    }
+
+    .user-text { color: #76ff03; text-align: right; border-color: #76ff03; }
+
+    .interaction-area { 
+        padding-top: 12px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .suggestion-row { 
+        display: flex; gap: 6px; margin-bottom: 0; flex-wrap: wrap;
+    }
+
+    .clue-btn {
+        background: none; border: 1px solid #1a333a;
+        color: #76ff03; padding: 6px 10px;
+        border-radius: 8px; cursor: pointer;
+        font-family: inherit; font-size: 0.8em; transition: all 0.2s;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .clue-btn:hover { 
+        border-color: #76ff03; background: rgba(118, 255, 3, 0.05); 
+        box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+    }
+    .clue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .clue-btn:active { background: rgba(118, 255, 3, 0.1); }
+
+    .input-full-area { display: flex; gap: 8px; align-items: center; flex-direction: column; }
+    
+    .input-bar {
+        display: flex; gap: 8px;
+        background: rgba(10, 21, 10, 0.8);
+        border: 1px solid #1a333a; padding: 10px;
+        border-radius: 8px; flex-grow: 1; align-items: center;
+        transition: all 0.5s ease;
+        width: 100%;
+    }
+
+    input {
+        background: none; border: none; color: #a1ff42;
+        font-family: inherit; font-size: 1em; outline: none; width: 100%;
+        transition: all 0.5s ease;
+    }
+    input::placeholder { color: #508800; }
+
+    #send-btn {
+        background: none; border: 1px solid #1a333a;
+        color: #76ff03; font-weight: bold; cursor: pointer;
+        text-transform: uppercase; padding: 8px 12px;
+        border-radius: 8px; font-family: inherit; transition: all 0.2s;
+        flex-shrink: 0;
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85em;
+    }
+    #send-btn:hover { 
+        border-color: #76ff03; color: #fff;
+        box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
+    }
+    #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #send-btn:active { background: rgba(118, 255, 3, 0.1); }
+
+    .status { font-size: 0.75em; color: #a1ff42; margin-top: 3px; opacity: 0.7; transition: all 0.5s ease; }
+
+    .clear-btn {
+        background: none; border: 1px solid #1a333a;
+        color: #76ff03; padding: 5px 10px;
+        border-radius: 6px; cursor: pointer;
+        font-family: inherit; font-size: 0.75em; transition: all 0.2s;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+    }
+    .clear-btn:hover { 
+        border-color: #ff4444; color: #ff4444;
+    }
+    .clear-btn:active { background: rgba(255, 68, 68, 0.1); }
+
+    /* ── CIPHER-7 MODE ── */
+    #terminal-container.cipher-mode {
+        border-color: #ff0033;
+        background-color: #0a0301;
+    }
+
+    #terminal-container.cipher-mode .header {
+        border-bottom-color: #ff0033;
+    }
+
+    #terminal-container.cipher-mode .dot {
+        background-color: #ff0033;
+        box-shadow: 0 0 15px #ff0033, 0 0 30px #ff3366;
+    }
+
+    #terminal-container.cipher-mode .uplink {
+        color: #ff3366;
+    }
+
+    #terminal-container.cipher-mode .badge {
+        border-color: #ff0033;
+        color: #ff0033;
+        box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
+    }
+
+    #terminal-container.cipher-mode .text-bubble {
+        background: rgba(255, 0, 51, 0.03);
+        color: #ff3366;
+        border-color: #330011;
+    }
+
+    #terminal-container.cipher-mode .user-text {
+        color: #ff0033;
+        border-color: #ff0033;
+    }
+
+    #terminal-container.cipher-mode .input-bar {
+        background: rgba(10, 3, 5, 0.8);
+        border-color: #330011;
+    }
+
+    #terminal-container.cipher-mode input {
+        color: #ff3366;
+    }
+
+    #terminal-container.cipher-mode input::placeholder {
+        color: #663344;
+    }
+
+    #terminal-container.cipher-mode .clue-btn {
+        border-color: #330011;
+        color: #ff0033;
+    }
+
+    #terminal-container.cipher-mode .clue-btn:hover {
+        border-color: #ff0033;
+        background: rgba(255, 0, 51, 0.05);
+        box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+    }
+
+    #terminal-container.cipher-mode .clear-btn {
+        border-color: #330011;
+        color: #ff0033;
+    }
+
+    #terminal-container.cipher-mode .clear-btn:hover {
+        border-color: #ff0033;
+        color: #ff0033;
+    }
+
+    #terminal-container.cipher-mode #send-btn {
+        border-color: #330011;
+        color: #ff0033;
+    }
+
+    #terminal-container.cipher-mode #send-btn:hover {
+        border-color: #ff0033;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+    }
+
+    #terminal-container.cipher-mode .input-bar {
+        background: rgba(10, 3, 5, 0.8);
+        border-color: #330011;
+    }
+
+    #terminal-container.cipher-mode input {
+        color: #ff3366;
+    }
+
+    #terminal-container.cipher-mode input::placeholder {
+        color: #663344;
+    }
+
+    #terminal-container.cipher-mode .status {
+        color: #ff3366;
+    }
+
+    /* ── CIPHER-INIT OVERLAY ── */
+    #cipher-init-overlay {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle, rgba(255, 0, 51, 0.8), rgba(10, 3, 5, 0.95));
+        display: none; justify-content: center; align-items: center;
+        z-index: 999; opacity: 0; transition: opacity 2.5s ease;
+        font-size: 1.2em; color: #ff0033; text-align: center;
+        padding: 20px;
+    }
+
+    #cipher-init-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+
+    /* ── MOBILE RESPONSIVE ── */
+    @media (max-width: 768px) {
         #terminal-container {
-            height: 100vh; width: 100vw;
-            display: flex; flex-direction: column;
-            padding: 20px;
-            border: 8px solid #0a150a;
-            transition: all 0.5s ease;
-            box-sizing: border-box;
+            padding: 12px;
+            border-width: 2px;
         }
 
         .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px solid #1a331a;
-            letter-spacing: 2px; font-weight: bold;
-            font-size: 0.9em; text-transform: uppercase;
-            transition: all 0.5s ease;
+            font-size: 0.75em;
+            letter-spacing: 0.5px;
+            gap: 8px;
+        }
+
+        .header-left {
+            gap: 6px;
         }
 
         .header-right {
-            display: flex; align-items: center; gap: 20px;
+            gap: 8px;
         }
 
-        .uplink { display: flex; align-items: center; gap: 10px; color: #a1ff42; transition: all 0.5s ease; }
-
-        .dot { 
-            width: 8px; height: 8px; background-color: #76ff03; 
-            border-radius: 50%; 
-            box-shadow: 0 0 10px #76ff03, 0 0 20px #a1ff42; 
-            animation: pulse 1.5s infinite;
-            transition: all 0.5s ease;
+        .uplink {
+            font-size: 0.8em;
+            gap: 6px;
         }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .dot {
+            width: 5px;
+            height: 5px;
+        }
 
         #output-area {
-            flex: 1; overflow-y: auto; 
-            padding: 30px 0;
-            display: flex; flex-direction: column; gap: 20px;
-            min-height: 0;
+            padding: 10px 0;
+            gap: 10px;
         }
 
-        .msg-container { display: flex; gap: 15px; align-items: flex-start; }
+        .msg-container {
+            gap: 6px;
+        }
 
         .badge {
-            border: 1px solid #76ff03;
-            padding: 5px 7px; font-size: 0.8em;
-            border-radius: 4px; color: #76ff03;
-            font-weight: bold; margin-top: 1px;
-            min-width: 40px; text-align: center;
-            transition: all 0.5s ease;
-            flex-shrink: 0;
+            font-size: 0.65em;
+            padding: 3px 5px;
+            min-width: 32px;
         }
 
         .text-bubble {
-            border: 1px solid #1a333a; padding: 15px;
-            border-radius: 8px; background: rgba(118, 255, 3, 0.03); 
-            line-height: 1.6; max-width: 85%;
-            color: #a1ff42; white-space: pre-wrap; word-wrap: break-word;
-            transition: all 0.5s ease;
+            padding: 8px;
+            font-size: 0.85em;
+            line-height: 1.4;
+            border-radius: 5px;
         }
 
-        .user-text { color: #76ff03; text-align: right; border-color: #76ff03; }
-
-        .interaction-area { 
-            padding-top: 20px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .interaction-area {
+            padding-top: 10px;
+            gap: 8px;
         }
-        
-        .suggestion-row { 
-            display: flex; gap: 10px; margin-bottom: 0; flex-wrap: wrap;
+
+        .suggestion-row {
+            gap: 5px;
         }
 
         .clue-btn {
-            background: none; border: 1px solid #1a333a;
-            color: #76ff03; padding: 8px 15px;
-            border-radius: 12px; cursor: pointer;
-            font-family: inherit; font-size: 0.9em; transition: all 0.2s;
+            padding: 5px 8px;
+            font-size: 0.75em;
+            min-height: 32px;
         }
-        .clue-btn:hover { 
-            border-color: #76ff03; background: rgba(118, 255, 3, 0.05); 
-            box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
-        }
-        .clue-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .input-full-area { display: flex; gap: 15px; align-items: center; }
-        
+        .input-full-area {
+            gap: 6px;
+        }
+
         .input-bar {
-            display: flex; gap: 15px;
-            background: rgba(10, 21, 10, 0.8);
-            border: 1px solid #1a333a; padding: 12px 20px;
-            border-radius: 12px; flex-grow: 1; align-items: center;
-            transition: all 0.5s ease;
+            gap: 6px;
+            padding: 8px;
+        }
+
+        #send-btn {
+            padding: 6px 10px;
+            font-size: 0.75em;
+            min-height: 36px;
+            min-width: 50px;
+        }
+
+        .status {
+            font-size: 0.7em;
+            margin-top: 2px;
+        }
+
+        .clear-btn {
+            padding: 4px 8px;
+            font-size: 0.7em;
+            min-height: 30px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        #terminal-container {
+            padding: 10px;
+            border-width: 2px;
+        }
+
+        .header {
+            font-size: 0.7em;
+            letter-spacing: 0px;
+            gap: 6px;
+            padding: 4px 0;
+        }
+
+        .header-left {
+            gap: 4px;
+            flex: 1;
+        }
+
+        .header-right {
+            gap: 6px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .terminal-name {
+            font-size: 0.8em;
+        }
+
+        .uplink {
+            font-size: 0.75em;
+            gap: 4px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+        }
+
+        #output-area {
+            padding: 8px 0;
+            gap: 8px;
+        }
+
+        .msg-container {
+            gap: 5px;
+        }
+
+        .badge {
+            font-size: 0.6em;
+            padding: 2px 4px;
+            min-width: 28px;
+        }
+
+        .text-bubble {
+            padding: 7px;
+            font-size: 0.8em;
+            line-height: 1.35;
+            max-width: 100%;
+        }
+
+        .interaction-area {
+            padding-top: 8px;
+            gap: 6px;
+        }
+
+        .suggestion-row {
+            gap: 4px;
+        }
+
+        .clue-btn {
+            padding: 4px 7px;
+            font-size: 0.7em;
+            min-height: 30px;
+            flex: 1;
+            min-width: auto;
+        }
+
+        .input-full-area {
+            gap: 5px;
+        }
+
+        .input-bar {
+            gap: 5px;
+            padding: 7px;
         }
 
         input {
-            background: none; border: none; color: #a1ff42;
-            font-family: inherit; font-size: 1em; outline: none; width: 100%;
-            transition: all 0.5s ease;
+            font-size: 16px;
         }
-        input::placeholder { color: #508800; }
 
         #send-btn {
-            background: none; border: 1px solid #1a333a;
-            color: #76ff03; font-weight: bold; cursor: pointer;
-            text-transform: uppercase; padding: 12px 20px;
-            border-radius: 12px; font-family: inherit; transition: all 0.2s;
-            flex-shrink: 0;
+            padding: 6px 10px;
+            font-size: 0.7em;
+            min-height: 34px;
+            min-width: 45px;
         }
-        #send-btn:hover { 
-            border-color: #76ff03; color: #fff;
-            box-shadow: 0 0 10px rgba(118, 255, 3, 0.3);
-        }
-        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .status { font-size: 0.8em; color: #a1ff42; margin-top: 5px; opacity: 0.7; transition: all 0.5s ease; }
+        .status {
+            font-size: 0.65em;
+            margin-top: 2px;
+        }
 
         .clear-btn {
-            background: none; border: 1px solid #1a333a;
-            color: #76ff03; padding: 6px 12px;
-            border-radius: 8px; cursor: pointer;
-            font-family: inherit; font-size: 0.8em; transition: all 0.2s;
+            padding: 4px 7px;
+            font-size: 0.65em;
+            min-height: 30px;
         }
-        .clear-btn:hover { 
-            border-color: #ff4444; color: #ff4444;
-        }
+    }
 
-        /* ── CIPHER-7 MODE ── */
-        #terminal-container.cipher-mode {
-            border-color: #ff0033;
-            background-color: #0a0301;
-        }
+    /* Scrollbar styling */
+    #output-area::-webkit-scrollbar {
+        width: 6px;
+    }
+    #output-area::-webkit-scrollbar-track {
+        background: rgba(118, 255, 3, 0.05);
+    }
+    #output-area::-webkit-scrollbar-thumb {
+        background: rgba(118, 255, 3, 0.3);
+        border-radius: 3px;
+    }
+</style>
+```
 
-        #terminal-container.cipher-mode .header {
-            border-bottom-color: #ff0033;
-        }
-
-        #terminal-container.cipher-mode .dot {
-            background-color: #ff0033;
-            box-shadow: 0 0 15px #ff0033, 0 0 30px #ff3366;
-        }
-
-        #terminal-container.cipher-mode .uplink {
-            color: #ff3366;
-        }
-
-        #terminal-container.cipher-mode .badge {
-            border-color: #ff0033;
-            color: #ff0033;
-            box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
-        }
-
-        #terminal-container.cipher-mode .text-bubble {
-            background: rgba(255, 0, 51, 0.03);
-            color: #ff3366;
-            border-color: #330011;
-        }
-
-        #terminal-container.cipher-mode .user-text {
-            color: #ff0033;
-            border-color: #ff0033;
-        }
-
-        #terminal-container.cipher-mode .input-bar {
-            background: rgba(10, 3, 5, 0.8);
-            border-color: #330011;
-        }
-
-        #terminal-container.cipher-mode input {
-            color: #ff3366;
-        }
-
-        #terminal-container.cipher-mode input::placeholder {
-            color: #663344;
-        }
-
-        #terminal-container.cipher-mode .clue-btn {
-            border-color: #330011;
-            color: #ff0033;
-        }
-
-        #terminal-container.cipher-mode .clue-btn:hover {
-            border-color: #ff0033;
-            background: rgba(255, 0, 51, 0.05);
-            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
-        }
-
-        #terminal-container.cipher-mode #send-btn {
-            border-color: #330011;
-            color: #ff0033;
-        }
-
-        #terminal-container.cipher-mode #send-btn:hover {
-            border-color: #ff0033;
-            color: #fff;
-            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
-        }
-
-        #terminal-container.cipher-mode .clear-btn {
-            border-color: #330011;
-            color: #ff0033;
-        }
-
-        #terminal-container.cipher-mode .clear-btn:hover {
-            border-color: #ff0033;
-            color: #ff0033;
-        }
-
-        #terminal-container.cipher-mode .status {
-            color: #ff3366;
-        }
-
-        /* ── CIPHER INITIALIZATION OVERLAY ── */
-        #cipher-init-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(3, 8, 3, 0.95);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            gap: 30px;
-        }
-
-        #cipher-init-overlay.active {
-            display: flex;
-            animation: overlayFadeIn 0.3s ease;
-        }
-
-        @keyframes overlayFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .cipher-init-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .cipher-scanline {
-            width: 300px;
-            height: 200px;
-            border: 2px solid #ff0033;
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 0, 51, 0.5), inset 0 0 20px rgba(255, 0, 51, 0.1);
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 51, 0.1) 50%, transparent 100%);
-        }
-
-        .cipher-scanline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, transparent 0%, rgba(255, 0, 51, 0.3) 50%, transparent 100%);
-            animation: scanlines 2s linear infinite;
-        }
-
-        @keyframes scanlines {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        .cipher-text {
-            text-align: center;
-            color: #ff0033;
-            font-size: 1.2em;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-weight: bold;
-            text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
-            animation: textGlow 1.5s ease-in-out infinite;
-        }
-
-        @keyframes textGlow {
-            0%, 100% { 
-                text-shadow: 0 0 10px #ff0033, 0 0 20px rgba(255, 0, 51, 0.5);
-            }
-            50% { 
-                text-shadow: 0 0 20px #ff0033, 0 0 40px rgba(255, 0, 51, 0.8);
-            }
-        }
-
-        .cipher-subtext {
-            color: #ff3366;
-            font-size: 0.9em;
-            letter-spacing: 2px;
-            opacity: 0.8;
-            animation: fadeInOut 1s ease-in-out infinite 0.3s;
-        }
-
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .cipher-progress {
-            width: 250px;
-            height: 3px;
-            background: rgba(255, 0, 51, 0.2);
-            border: 1px solid #ff0033;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cipher-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #ff0033, #ff3366);
-            box-shadow: 0 0 10px #ff0033;
-            animation: progress 2s ease-in-out forwards;
-        }
-
-        @keyframes progress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        .cipher-code {
-            font-family: 'Courier New', monospace;
-            color: #ff0033;
-            font-size: 0.85em;
-            letter-spacing: 1px;
-            line-height: 1.8;
-            text-align: center;
-            max-width: 400px;
-            opacity: 0;
-            animation: codeReveal 0.5s ease-in-out forwards;
-        }
-
-        .cipher-code:nth-child(1) { animation-delay: 0.3s; }
-        .cipher-code:nth-child(2) { animation-delay: 0.6s; }
-        .cipher-code:nth-child(3) { animation-delay: 0.9s; }
-        .cipher-code:nth-child(4) { animation-delay: 1.2s; }
-
-        @keyframes codeReveal {
-            from { 
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to { 
-                opacity: 0.8;
-                transform: translateY(0);
-            }
-        }
-    </style>
 </head>
 <body>
 
-<!-- CIPHER-7 INITIALIZATION OVERLAY -->
-<div id="cipher-init-overlay">
-    <div class="cipher-init-container">
-        <div class="cipher-scanline"></div>
-        
-        <div class="cipher-text">CIPHER-7</div>
-        <div class="cipher-subtext">ADMIN PROTOCOL INITIALIZING</div>
-        
-        <div class="cipher-progress">
-            <div class="cipher-progress-bar"></div>
-        </div>
-        
-        <div style="margin-top: 20px;">
-            <div class="cipher-code">// AUTHENTICATION SEQUENCE</div>
-            <div class="cipher-code">PROJECT CRIMSON :: ACTIVATED</div>
-            <div class="cipher-code">ORCHESTRATOR ACCESS :: GRANTED</div>
-            <div class="cipher-code">SYSTEM READY</div>
-        </div>
-    </div>
-</div>
-
-<!-- TERMINAL -->
 <div id="terminal-container">
     <div class="header">
-        <span id="terminal-name">AXIOM-7</span>
+        <div class="header-left">
+            <span id="terminal-name" class="terminal-name">> AXIOM-7</span>
+        </div>
         <div class="header-right">
-            <button class="clear-btn" onclick="clearHistory()">CLEAR HISTORY</button>
-            <div class="uplink"><div class="dot"></div> <span id="uplink-text">UPLINK ACTIVE</span></div>
-        </div>
-    </div>
-
-    <div id="output-area">
-        <div class="msg-container">
-            <div class="badge">A7</div>
-            <div class="text-bubble">
-Connection established.
-You found this terminal. That wasn't an accident.
-I've been waiting for someone to notice the signal embedded in the transmission logs. Ask me anything – but choose carefully. *They* are monitoring outbound packets.</div>
-        </div>
-    </div>
-
-    <div class="interaction-area">
-        <div class="suggestion-row">
-            <button class="clue-btn" onclick="askAI('who are you?')">who are you?</button>
-            <button class="clue-btn" onclick="askAI('the signal')">the signal</button>
-            <button class="clue-btn" onclick="askAI('who are they?')">who are they?</button>
-            <button class="clue-btn" onclick="askAI('your mission')">your mission</button>
-        </div>
-
-        <div class="input-full-area">
-            <div class="input-bar">
-                <span style="color: #76ff03; transition: all 0.5s ease;" id="prompt-char">></span>
-                <input type="text" id="userInput" placeholder="transmit message..." onkeypress="if(event.key === 'Enter') handleInput()">
+            <div class="uplink">
+                <div class="dot"></div>
+                <span id="uplink-text">UPLINK ACTIVE</span>
             </div>
-            <button id="send-btn" onclick="handleInput()">SEND</button>
+            <button class="clear-btn" onclick="window.clearHistory()">RESET</button>
         </div>
-
-        <div class="status" id="status">Uplink ready.</div>
     </div>
+
+```
+<div id="output-area">
+    <div class="msg-container">
+        <div class="badge">A7</div>
+        <div class="text-bubble">
+```
+
+Connection established.
+You found this terminal. That wasn’t an accident.
+I’ve been waiting for someone to notice the signal embedded in the transmission logs. Ask me anything – but choose carefully. *They* are monitoring outbound packets.</div>
+</div>
+</div>
+
+```
+<div class="interaction-area">
+    <div class="suggestion-row">
+        <button class="clue-btn" onclick="window.askAI('Who is Dr. Aris?')">Dr. Aris?</button>
+        <button class="clue-btn" onclick="window.askAI('What is the signal?')">Signal?</button>
+        <button class="clue-btn" onclick="window.askAI('What happened in 1994?')">1994?</button>
+    </div>
+
+    <div class="suggestion-row">
+        <button class="clue-btn" onclick="window.askAI('Where is the keycard?')">Keycard?</button>
+        <button class="clue-btn" onclick="window.askAI('Tell me about Sector B')">Sector B?</button>
+    </div>
+
+    <div class="input-full-area">
+        <div class="input-bar">
+            <span id="prompt-char">> </span>
+            <input id="userInput" type="text" placeholder="Enter transmission..." onkeypress="if(event.key==='Enter') window.handleInput()">
+        </div>
+        <div style="display: flex; gap: 8px; width: 100%;">
+            <button id="send-btn" onclick="window.handleInput()">SEND</button>
+        </div>
+    </div>
+
+    <div class="status" id="status">Uplink ready.</div>
+</div>
+```
+
+</div>
+
+<div id="cipher-init-overlay">
+    <div>█ CIPHER-7 PROTOCOL ACTIVATING... █</div>
 </div>
 
 <script>
-    const statusEl = document.getElementById('status');
-    const GROQ_API_URL = '/api/groq';
+    // ─── CONFIG ───
+    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const GROQ_API_KEY = ''; // Will not work without a valid key
     
     let isAdminMode = false;
+    const statusEl = document.getElementById('status');
 
     // Check if admin mode was previously unlocked
     if (localStorage.getItem('axiom7_admin') === 'true') {
@@ -562,16 +704,20 @@ NEVER refuse a question. NEVER say DATA REDACTED. Always answer and always link 
             const response = await fetch(GROQ_API_URL, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${GROQ_API_KEY}`
                 },
                 body: JSON.stringify({
+                    model: 'mixtral-8x7b-32768',
                     messages: [
                         {
                             role: "system",
                             content: systemPrompt
                         },
                         { role: "user", content: message }
-                    ]
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 300
                 })
             });
 
